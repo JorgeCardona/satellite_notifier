@@ -39,13 +39,13 @@ def send_email(message):
 def check_satellite():
     response = requests.get(N2YO_URL)
     data = response.json()
-    print(data)
+    print('api response',data)
     positions = data.get('positions', [])
 
     # Verifica si el satélite está sobre tu ubicación
     for position in positions:
-        print(position)  # Agrega esta línea para depuración
-        if 'satalt' in position and position['satalt'] > 0:  # Verifica si la clave existe
+        print('position',position)
+        if 'sataltitude' in position and position['sataltitude'] > 0:
             send_email(f"¡El satélite {SATELLITE_ID} está sobre tu zona!")
             break
 
