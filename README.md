@@ -212,6 +212,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install requests
+          pip install pytz
         # This step upgrades pip and installs the necessary dependencies for the script.
 
       - name: Run script
