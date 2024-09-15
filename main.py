@@ -53,7 +53,7 @@ def check_satellite():
         print('SATELLITE_ID',SATELLITE_ID)
         print('ALTITUDE_RESPONSE',ALTITUDE_RESPONSE)
         
-        if 'sataltitude' in position and position['sataltitude'] > 0:
+        if 'sataltitude' in position and position['sataltitude'] > ALTITUDE:
             send_email(f"¡El satélite {SATELLITE_ID} - {SATELITTE_NAME} está sobre tu zona!")
             print('ENAIL SENT SUCCESDFULLY')
             break
