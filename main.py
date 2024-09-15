@@ -115,7 +115,7 @@ def check_satellite(url_satellite):
         print('Altitude Response:', altitude_response)
         
         # Check if the satellite is visible
-        if altitude_response > int(ALTITUDE) and elevation_response > 0 and not eclipsed:
+        if elevation_response > 0 and not eclipsed:
             send_email(f"Satellite {satellite_name} is over your area at {azimuth_response}° azimuth. The direction to look is: {direction}!")
             print('Email sent successfully.')
             break  # Exit loop after sending the email
