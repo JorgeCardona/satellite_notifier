@@ -241,6 +241,6 @@ Click Run workflow.
 
 5. Satellite Visibility Data and Timing
 ```
-https://heavens-above.com/
+https://heavens-above.com
 https://spotthestation.nasa.gov
 ```
