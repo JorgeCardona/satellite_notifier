@@ -3,7 +3,6 @@ import requests
 import smtplib
 from email.mime.text import MIMEText
 
-
 # Retrieve location data from environment variables,  https://www.google.com/maps
 LATITUDE = os.getenv('LATITUDE')
 LONGITUDE = os.getenv('LONGITUDE')
