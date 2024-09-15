@@ -41,6 +41,7 @@ def check_satellite():
     data = response.json()
     print('api response',data)
     positions = data.get('positions', [])
+    info =  data.get('info', [])
 
     # Verifica si el satélite está sobre tu ubicación
     for position in positions:
