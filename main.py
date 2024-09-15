@@ -45,8 +45,16 @@ def check_satellite():
     # Verifica si el satélite está sobre tu ubicación
     for position in positions:
         print('position',position)
+        SATELITTE_NAME = info['satname']
+        ALTITUDE_RESPONSE = position['sataltitude']
+
+        print('SATELITTE_NAME',SATELITTE_NAME)
+        print('SATELLITE_ID',SATELLITE_ID)
+        print('ALTITUDE_RESPONSE',ALTITUDE_RESPONSE)
+        
         if 'sataltitude' in position and position['sataltitude'] > 0:
-            send_email(f"¡El satélite {SATELLITE_ID} está sobre tu zona!")
+            send_email(f"¡El satélite {SATELLITE_ID} - {SATELITTE_NAME} está sobre tu zona!")
+            print('ENAIL SENT SUCCESDFULLY')
             break
 
 # Ejecutar la verificación del satélite
