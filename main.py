@@ -3,9 +3,10 @@ import requests
 import smtplib
 from email.mime.text import MIMEText
 
-# Datos de la ubicación (reemplazar con tu latitud y longitud)
+# Datos de la ubicación (reemplazar con tu latitud y longitud) https://www.google.com/maps
 LATITUDE = os.getenv('LATITUDE')
 LONGITUDE = os.getenv('LONGITUDE')
+# https://www.advancedconverter.com/es/herramientas-de-mapa/encontrar-altitud-desde-coordenadas
 ALTITUDE = os.getenv('ALTITUDE')
 
 # Datos del satélite (ejemplo con el ID de la Estación Espacial Internacional)
