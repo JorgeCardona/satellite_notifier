@@ -9,17 +9,17 @@ LONGITUDE = os.getenv('LONGITUDE')
 ALTITUDE = os.getenv('ALTITUDE')
 
 # Datos del satélite (ejemplo con el ID de la Estación Espacial Internacional)
-SATELITE_ID = os.getenv('SATELITE_ID')
+SATELLITE_ID = os.getenv('SATELLITE_ID')
 
-# N2YO API Key
-API_KEY = os.getenv('N2YO_API_KEY')
+# SATELLITE API Key
+SATELLITE_API_KEY = os.getenv('SATELLITE_API_KEY')
 
 # URL de la API
-N2YO_URL = f"https://api.n2yo.com/rest/v1/satellite/positions/{SATELITE_ID}/{LATITUDE}/{LONGITUDE}/{ALTITUDE}/1/&apiKey={API_KEY}"
+N2YO_URL = f"https://api.n2yo.com/rest/v1/satellite/positions/{SATELLITE_ID}/{LATITUDE}/{LONGITUDE}/{ALTITUDE}/1/&apiKey={SATELLITE_API_KEY}"
 
 # Configuración del correo electrónico
-SMTP_SERVER = 'smtp.gmail.com'
-SMTP_PORT = 587
+SMTP_SERVER = os.getenv('SMTP_SERVER')
+SMTP_PORT = os.getenv('SMTP_PORT')
 EMAIL_USER = os.getenv('EMAIL_USER')
 EMAIL_PASSWORD = os.getenv('EMAIL_PASSWORD')
 RECIPIENT_EMAIL = os.getenv('RECIPIENT_EMAIL')
@@ -43,7 +43,7 @@ def check_satellite():
     # Verifica si el satélite está sobre tu ubicación
     for position in positions:
         if position['satalt'] > 0:  # Si la altitud es mayor a 0, es visible
-            send_email(f"¡El satélite {SATELITE_ID} está sobre tu zona!")
+            send_email(f"¡El satélite {SATELLITE_ID} está sobre tu zona!")
             break
 
 # Ejecutar la verificación del satélite
