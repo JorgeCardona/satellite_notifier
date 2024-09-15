@@ -15,6 +15,8 @@ import os
 import requests
 import smtplib
 from email.mime.text import MIMEText
+from datetime import datetime, timedelta
+import pytz
 
 # Retrieve location data from environment variables,  https://www.google.com/maps
 LATITUDE = os.getenv('LATITUDE')
@@ -85,6 +87,17 @@ def get_look_direction(azimuth):
     else:
         return "Invalid azimuth value"
 
+
+def convert_utc_to_local(utc_timestamp):
+    # Convert UTC timestamp to datetime
+    utc_time = datetime.utcfromtimestamp(utc_timestamp)
+    
+    # Define UTC-5 timezone
+    local_tz = pytz.timezone('America/Bogota')  # Bogota is UTC-5
+    local_time = utc_time.replace(tzinfo=pytz.utc).astimezone(local_tz)
+    
+    return local_time.strftime('%Y-%m-%d %H:%M:%S')
+
 def check_satellite(url_satellite):
     """
     Checks if the satellite is visible over the specified location by making a request to the satellite API.
@@ -126,10 +139,13 @@ def check_satellite(url_satellite):
         
         print('Satellite Name:', satellite_name)
         print('Altitude Response:', altitude_response)
+
+        # Convert timestamp to local time
+        local_time = convert_utc_to_local(timestamp)
         
         # Check if the satellite is visible
         if elevation_response > 0 and not eclipsed:
-            send_email(f"Satellite {satellite_name} is over your area at {azimuth_response}° azimuth. The direction to look is: {direction}!")
+            send_email(f"Satellite {satellite_name} is over your area at {azimuth_response}° azimuth. The direction to look is: {direction}. Visible at {local_time} UTC-5!")
             print('Email sent successfully.')
             break  # Exit loop after sending the email
 
