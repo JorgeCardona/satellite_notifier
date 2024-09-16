@@ -105,7 +105,7 @@ def check_satellite(url_satellite):
     info = data.get('info', [])
 
     df_positions = pd.DataFrame(positions)
-    df_info = pd.DataFrame(info)
+    df_info = pd.DataFrame([info])
 
     print('Dataframe Position:')
     print(df_positions)
