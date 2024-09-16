@@ -142,11 +142,11 @@ def check_satellite(url_satellite):
             print(f"Satellite {satellite_name} is not over your area. Altitude: {altitude_response} meters, Direction: {direction}, Azimuth: {azimuth_response}°, Eclipsed: {'Yes' if eclipsed else 'No'}.")
 
 # validate the satellite list url URL and run the check
-def check_multiple_satellites(SATELLITE_ID):
+def check_multiple_satellites():
     """
     Retrieves the list of satellite IDs from the environment variable and performs a satellite check for each ID.
     """
-    satellite_ids = os.getenv(SATELLITE_ID, '').split(',')
+    satellite_ids = os.getenv('SATELLITE_ID', '').split(',')
     
     for satellite_id in satellite_ids:
         satellite_id = satellite_id.strip()  # Remove any leading/trailing whitespace
@@ -157,4 +157,4 @@ def check_multiple_satellites(SATELLITE_ID):
             check_satellite(url_satellite)
 
 # Call the new function to process the list of satellite IDs
-check_multiple_satellites(SATELLITE_ID)
+check_multiple_satellites()
