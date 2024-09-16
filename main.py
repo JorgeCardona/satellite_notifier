@@ -118,17 +118,19 @@ def check_satellite(url_satellite):
         eclipsed = position.get('eclipsed', False)
 
         direction = get_look_direction(int(azimuth_response))
-        print(f"Direction to look: {direction} (Azimuth: {azimuth_response}°)")
-        print(f"Right Ascension: {ra}°")
-        print(f"Declination: {dec}°")
-        print(f"Timestamp: {timestamp}")
-        print(f"Eclipsed: {'Yes' if eclipsed else 'No'}")
-        
-        print('Satellite Name:', satellite_name)
-        print('Altitude Response:', altitude_response)
-
         # Convert timestamp to local time
         local_time = convert_utc_to_local(timestamp)
+
+        print('Satellite Name:', satellite_name)
+        print('Altitude Response:', altitude_response)
+        print('Altitude Response:', altitude_response)
+        print('Satellite Elevation:', elevation_response)
+        print(f"Direction to look: {direction} (Azimuth: {azimuth_response}°)")
+        print(f"Right Ascension: {ra}°")
+        print(f"Declination: {dec}°")    
+        print(f"Timestamp: {timestamp}")
+        print(f"Local Time: {local_time}")
+        print(f"Eclipsed: {'Yes' if eclipsed else 'No'}")
         
         # Check if the satellite is visible
         if elevation_response > 0 and not eclipsed:
@@ -139,6 +141,20 @@ def check_satellite(url_satellite):
         else:
             print(f"Satellite {satellite_name} is not over your area. Altitude: {altitude_response} meters, Direction: {direction}, Azimuth: {azimuth_response}°, Eclipsed: {'Yes' if eclipsed else 'No'}.")
 
-# Construct the satellite URL and run the check
-url_satellite = construct_url(SATELLITE_ID, LATITUDE, LONGITUDE, ALTITUDE, SATELLITE_API_KEY)
-check_satellite(url_satellite)
+# validate the satellite list url URL and run the check
+def check_multiple_satellites(SATELLITE_ID):
+    """
+    Retrieves the list of satellite IDs from the environment variable and performs a satellite check for each ID.
+    """
+    satellite_ids = os.getenv(SATELLITE_ID, '').split(',')
+    
+    for satellite_id in satellite_ids:
+        satellite_id = satellite_id.strip()  # Remove any leading/trailing whitespace
+        if satellite_id:  # Check if the satellite_id is not empty
+            print('Satellite ID:', satellite_id)
+            # Construct the satellite URL for the current ID and run the check
+            url_satellite = construct_url(satellite_id, LATITUDE, LONGITUDE, ALTITUDE, SATELLITE_API_KEY)
+            check_satellite(url_satellite)
+
+# Call the new function to process the list of satellite IDs
+check_multiple_satellites(SATELLITE_ID)
