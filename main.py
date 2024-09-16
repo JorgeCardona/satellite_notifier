@@ -102,7 +102,7 @@ def check_satellite(url_satellite):
     print('API response:', data)
     
     positions = data.get('positions', [])
-    info = data.get('info', [])
+    info = [data.get('info', {})]
 
     df_positions = pd.DataFrame(positions)
     df_info = pd.DataFrame([info])
