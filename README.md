@@ -17,6 +17,7 @@ import smtplib
 from email.mime.text import MIMEText
 from datetime import datetime, timedelta
 import pytz
+import pandas as pd
 
 # Retrieve location data from environment variables,  https://www.google.com/maps
 LATITUDE = os.getenv('LATITUDE')
@@ -116,8 +117,19 @@ def check_satellite(url_satellite):
     positions = data.get('positions', [])
     info = data.get('info', {})
 
+    df_positions = pd.DataFrame(positions)
+    df_info = pd.DataFrame([info])
+
+    print('Dataframe Position:')
+    print(df_positions)
+    print()
+    print('Dataframe Info:')
+    print(df_info)
+    print()
+
     # Retrieve satellite name from info
     satellite_name = info.get('satname', 'Unknown')
+    satellite_id = info.get('satid', 'Unknown')
 
     # Check each position to see if the satellite is over the location
     for position in positions:
@@ -131,30 +143,60 @@ def check_satellite(url_satellite):
         eclipsed = position.get('eclipsed', False)
 
         direction = get_look_direction(int(azimuth_response))
-        print(f"Direction to look: {direction} (Azimuth: {azimuth_response}°)")
-        print(f"Right Ascension: {ra}°")
-        print(f"Declination: {dec}°")
-        print(f"Timestamp: {timestamp}")
-        print(f"Eclipsed: {'Yes' if eclipsed else 'No'}")
-        
-        print('Satellite Name:', satellite_name)
-        print('Altitude Response:', altitude_response)
-
         # Convert timestamp to local time
         local_time = convert_utc_to_local(timestamp)
+
+        print('Satellite Name:', satellite_name)
+        print('Altitude Response:', altitude_response)
+        print('Altitude Response:', altitude_response)
+        print('Satellite Elevation:', elevation_response)
+        print(f"Direction to look: {direction} (Azimuth: {azimuth_response}°)")
+        print(f"Right Ascension: {ra}°")
+        print(f"Declination: {dec}°")    
+        print(f"Timestamp: {timestamp}")
+        print(f"Local Time: {local_time}")
+        print(f"Eclipsed: {'Yes' if eclipsed else 'No'}")
         
         # Check if the satellite is visible
         if elevation_response > 0 and not eclipsed:
-            send_email(f"Satellite {satellite_name} is over your area at {azimuth_response}° azimuth. The direction to look is: {direction}. Visible at {local_time} UTC-5!")
-            print('Email sent successfully.')
-            break  # Exit loop after sending the email
-
+            message = f"Satellite ID {satellite_id} with name {satellite_name} is over your area at {azimuth_response}° azimuth. The direction to look is: {direction}. Visible at {local_time} UTC-5!"
+            return message
+        
         else:
             print(f"Satellite {satellite_name} is not over your area. Altitude: {altitude_response} meters, Direction: {direction}, Azimuth: {azimuth_response}°, Eclipsed: {'Yes' if eclipsed else 'No'}.")
 
-# Construct the satellite URL and run the check
-url_satellite = construct_url(SATELLITE_ID, LATITUDE, LONGITUDE, ALTITUDE, SATELLITE_API_KEY)
-check_satellite(url_satellite)
+            return None
+
+# validate the satellite list url URL and run the check
+def check_multiple_satellites():
+    """
+    Retrieves the list of satellite IDs from the environment variable and performs a satellite check for each ID.
+    """
+    satellite_ids = os.getenv('SATELLITE_ID', '').split(',')
+
+    visible_satellites = list()
+
+    for satellite_id in satellite_ids:
+        satellite_id = satellite_id.strip()  # Remove any leading/trailing whitespace
+        if satellite_id:  # Check if the satellite_id is not empty
+            print('Satellite ID:', satellite_id)
+            # Construct the satellite URL for the current ID and run the check
+            url_satellite = construct_url(satellite_id, LATITUDE, LONGITUDE, ALTITUDE, SATELLITE_API_KEY)
+
+            satelite = check_satellite(url_satellite)
+            if satelite:
+                visible_satellites.append(satelite)
+    
+    if visible_satellites:
+        print('List of Visible Satellites:')
+        print(visible_satellites)
+
+        body_message = '\n'.join(visible_satellites)
+        send_email(body_message)
+        print('Email sent successfully.')
+
+# Call the new function to process the list of satellite IDs
+check_multiple_satellites()
 ```
 
 2. Configure Environment Secrets in GitHub
@@ -200,20 +242,19 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-        # This step checks out the repository to the runner, allowing the workflow to access the code.
 
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.x'
-        # This step sets up the Python environment with the specified version.
+          python-version: '3.11.7' # python-version: '3.x'
+        # This step sets up the Python environment with Python 3.11.7
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install requests
           pip install pytz
-        # This step upgrades pip and installs the necessary dependencies for the script.
+          pip install pandas
 
       - name: Run script
         env:
