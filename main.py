@@ -113,9 +113,11 @@ def check_satellite(url_satellite):
     print('Dataframe Info:')
     print(df_info)
     print()
-    
+
     # Retrieve satellite name from info
     satellite_name = info.get('satname', 'Unknown')
+
+    visible_satellites = list()
 
     # Check each position to see if the satellite is over the location
     for position in positions:
@@ -147,10 +149,15 @@ def check_satellite(url_satellite):
         if elevation_response > 0 and not eclipsed:
             send_email(f"Satellite {satellite_name} is over your area at {azimuth_response}° azimuth. The direction to look is: {direction}. Visible at {local_time} UTC-5!")
             print('Email sent successfully.')
+            visible_satellites.append(satellite_name)
             break  # Exit loop after sending the email
 
         else:
             print(f"Satellite {satellite_name} is not over your area. Altitude: {altitude_response} meters, Direction: {direction}, Azimuth: {azimuth_response}°, Eclipsed: {'Yes' if eclipsed else 'No'}.")
+
+    print('List of Visible Satellites:')
+    print(visible_satellites)
+
 
 # validate the satellite list url URL and run the check
 def check_multiple_satellites():
