@@ -102,7 +102,7 @@ def check_satellite(url_satellite):
     print('API response:', data)
     
     positions = data.get('positions', [])
-    info = data.get('info', {})
+    info = data.get('info', [])
 
     df_positions = pd.DataFrame(positions)
     df_info = pd.DataFrame(info)
@@ -147,16 +147,19 @@ def check_satellite(url_satellite):
         
         # Check if the satellite is visible
         if elevation_response > 0 and not eclipsed:
-            send_email(f"Satellite {satellite_name} is over your area at {azimuth_response}° azimuth. The direction to look is: {direction}. Visible at {local_time} UTC-5!")
-            print('Email sent successfully.')
-            visible_satellites.append(satellite_name)
-            break  # Exit loop after sending the email
-
+            message = f"Satellite {satellite_name} is over your area at {azimuth_response}° azimuth. The direction to look is: {direction}. Visible at {local_time} UTC-5!"
+            visible_satellites.append(message)
         else:
             print(f"Satellite {satellite_name} is not over your area. Altitude: {altitude_response} meters, Direction: {direction}, Azimuth: {azimuth_response}°, Eclipsed: {'Yes' if eclipsed else 'No'}.")
 
-    print('List of Visible Satellites:')
-    print(visible_satellites)
+    if visible_satellites:
+        print('List of Visible Satellites:')
+        print(visible_satellites)
+
+        body_message = '\n'.join(visible_satellites)
+        send_email(body_message)
+        print('Email sent successfully.')
+
 
 
 # validate the satellite list url URL and run the check
