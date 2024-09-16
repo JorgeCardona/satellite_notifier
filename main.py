@@ -118,8 +118,6 @@ def check_satellite(url_satellite):
     satellite_name = info.get('satname', 'Unknown')
     satellite_id = info.get('satid', 'Unknown')
 
-    visible_satellites = list()
-
     # Check each position to see if the satellite is over the location
     for position in positions:
         print('Position:', position)
@@ -149,19 +147,12 @@ def check_satellite(url_satellite):
         # Check if the satellite is visible
         if elevation_response > 0 and not eclipsed:
             message = f"Satellite ID {satellite_id} with name {satellite_name} is over your area at {azimuth_response}° azimuth. The direction to look is: {direction}. Visible at {local_time} UTC-5!"
-            visible_satellites.append(message)
+            return message
+        
         else:
             print(f"Satellite {satellite_name} is not over your area. Altitude: {altitude_response} meters, Direction: {direction}, Azimuth: {azimuth_response}°, Eclipsed: {'Yes' if eclipsed else 'No'}.")
 
-    if visible_satellites:
-        print('List of Visible Satellites:')
-        print(visible_satellites)
-
-        body_message = '\n'.join(visible_satellites)
-        send_email(body_message)
-        print('Email sent successfully.')
-
-
+            return None
 
 # validate the satellite list url URL and run the check
 def check_multiple_satellites():
@@ -169,14 +160,27 @@ def check_multiple_satellites():
     Retrieves the list of satellite IDs from the environment variable and performs a satellite check for each ID.
     """
     satellite_ids = os.getenv('SATELLITE_ID', '').split(',')
-    
+
+    visible_satellites = list()
+
     for satellite_id in satellite_ids:
         satellite_id = satellite_id.strip()  # Remove any leading/trailing whitespace
         if satellite_id:  # Check if the satellite_id is not empty
             print('Satellite ID:', satellite_id)
             # Construct the satellite URL for the current ID and run the check
             url_satellite = construct_url(satellite_id, LATITUDE, LONGITUDE, ALTITUDE, SATELLITE_API_KEY)
-            check_satellite(url_satellite)
+
+            satelite = check_satellite(url_satellite)
+            if satelite:
+                visible_satellites.append(satelite)
+    
+    if visible_satellites:
+        print('List of Visible Satellites:')
+        print(visible_satellites)
+
+        body_message = '\n'.join(visible_satellites)
+        send_email(body_message)
+        print('Email sent successfully.')
 
 # Call the new function to process the list of satellite IDs
 check_multiple_satellites()
