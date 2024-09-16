@@ -102,7 +102,7 @@ def check_satellite(url_satellite):
     print('API response:', data)
     
     positions = data.get('positions', [])
-    info = [data.get('info', {})]
+    info = data.get('info', {})
 
     df_positions = pd.DataFrame(positions)
     df_info = pd.DataFrame([info])
@@ -116,6 +116,7 @@ def check_satellite(url_satellite):
 
     # Retrieve satellite name from info
     satellite_name = info.get('satname', 'Unknown')
+    satellite_id = info.get('satid', 'Unknown')
 
     visible_satellites = list()
 
@@ -147,7 +148,7 @@ def check_satellite(url_satellite):
         
         # Check if the satellite is visible
         if elevation_response > 0 and not eclipsed:
-            message = f"Satellite {satellite_name} is over your area at {azimuth_response}° azimuth. The direction to look is: {direction}. Visible at {local_time} UTC-5!"
+            message = f"Satellite ID {satellite_id} with name {satellite_name} is over your area at {azimuth_response}° azimuth. The direction to look is: {direction}. Visible at {local_time} UTC-5!"
             visible_satellites.append(message)
         else:
             print(f"Satellite {satellite_name} is not over your area. Altitude: {altitude_response} meters, Direction: {direction}, Azimuth: {azimuth_response}°, Eclipsed: {'Yes' if eclipsed else 'No'}.")
