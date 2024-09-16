@@ -4,6 +4,7 @@ import smtplib
 from email.mime.text import MIMEText
 from datetime import datetime, timedelta
 import pytz
+import pandas as pd
 
 # Retrieve location data from environment variables,  https://www.google.com/maps
 LATITUDE = os.getenv('LATITUDE')
@@ -103,6 +104,16 @@ def check_satellite(url_satellite):
     positions = data.get('positions', [])
     info = data.get('info', {})
 
+    df_positions = pd.DataFrame(positions)
+    df_info = pd.DataFrame(info)
+
+    print('Dataframe Position:')
+    print(df_positions)
+    print()
+    print('Dataframe Info:')
+    print(df_info)
+    print()
+    
     # Retrieve satellite name from info
     satellite_name = info.get('satname', 'Unknown')
 
