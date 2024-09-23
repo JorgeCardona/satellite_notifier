@@ -233,7 +233,12 @@ name: Satellite Notifier
 
 on:
   schedule:
-    - cron: '0 19-23,0-7 * * 6,0'  # Runs every 5 minutes
+    # The cron runs always in UTC time.
+    # - cron: '0 0-4,5-12 * * 6,0'  # Runs in UTC, corresponding to 19:00-07:00 UTC-5
+    # This cron is adjusted to run in UTC-5
+    # UTC-5 means adding 5 hours to UTC time
+    # To run between 19:00 and 07:00 UTC-5, we adjust the range in UTC
+    - cron: '0 0-12 * * 6,0'  # Runs the workflow between 19:00 and 07:00 in UTC-5 on Saturday (6) and Sunday (0)
   workflow_dispatch:  # Allows manual triggering if needed
 
 jobs:
@@ -246,8 +251,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.11.7' # python-version: '3.x'
-        # This step sets up the Python environment with Python 3.11.7
+          python-version: '3.11.7' # Sets up Python 3.11.7
 
       - name: Install dependencies
         run: |
