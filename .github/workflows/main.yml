@@ -1,35 +1,25 @@
-# https://github.com/actions
-# https://github.com/marketplace?type=actions
-
 name: Satellite Notifier
 
 on:
   schedule:
-    # The cron runs always in UTC time.
-    # - cron: '0 0-4,5-12 * * 6,0'  # Runs in UTC, corresponding to 19:00-07:00 UTC-5
-    # This cron is adjusted to run in UTC-5
-    # UTC-5 means adding 5 hours to UTC time
-    # To run between 19:00 and 07:00 UTC-5, we adjust the range in UTC
     - cron: '0 0-12 * * 6,0'  # Runs the workflow between 19:00 and 07:00 in UTC-5 on Saturday (6) and Sunday (0)
-  workflow_dispatch:  # Allows manual triggering if needed
+  workflow_dispatch:
 
 jobs:
   run:
     runs-on: ubuntu-latest
 
     permissions:
-      # Give the default GITHUB_TOKEN write permission to commit and push the
-      # added or changed files to the repository.
       contents: write
       
     steps:
-      - name: Checkout repository # download code from repository 
+      - name: Checkout repository 
         uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11.7' # Sets up Python 3.11.7
+          python-version: '3.11.7'
 
       - name: Install dependencies
         run: |
@@ -39,7 +29,7 @@ jobs:
           pip install pandas
 
       - name: Run script
-        env: # Captures the values from GitHub Actions secrets and converts them into environment variable values.
+        env:
           SATELLITE_API_KEY: ${{ secrets.SATELLITE_API_KEY }}
           SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
           SMTP_PORT: ${{ secrets.SMTP_PORT }}
@@ -53,16 +43,11 @@ jobs:
           LOG_DIRECTORY: ${{ secrets.LOG_DIRECTORY }}
           LOG_FILE: ${{ secrets.LOG_FILE }}  
         run: python main.py
-        # This step runs the Python script with the environment variables needed for the satellite notification process.
 
-      - name: auto commit and push changes
+      - name: Auto commit and push changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          # Optional. Commit message for the created commit.
-          # Defaults to "Apply automatic changes"
           commit_message: Automated Change
-      
-          # Optional commit user and author settings
-          commit_user_name: My GitHub Actions Bot # defaults to "github-actions[bot]"
+          commit_user_name: My GitHub Actions Bot
           commit_user_email: ${{ secrets.EMAIL_USER }}
-          commit_author: Jorge Cardona
+          commit_author: 'Jorge Cardona <${{ secrets.EMAIL_USER }}>'
