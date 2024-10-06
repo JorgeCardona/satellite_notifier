@@ -17,33 +17,28 @@ jobs:
   run:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        python-version: [3.10.13, 3.11.7, 3.12.3] # Define a matrix to test on multiple Python versions
-
     permissions:
       # Give the default GITHUB_TOKEN write permission to commit and push the
       # added or changed files to the repository.
       contents: write
 
     steps:
-      - name: Checkout repository # Download code from the repository
+      - name: Checkout repository # download code from repository 
         uses: actions/checkout@v4
 
-      - name: Set up Python # Set up the specific Python version for each job based on the matrix
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }} # Select Python version from the matrix
+          python-version: '3.11.7' # Sets up Python 3.11.7
 
-      - name: Install dependencies # Install required Python packages
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install requests
           pip install pytz
           pip install pandas
-
-      - name: Run script # Run the main Python script with necessary environment variables
-        env: # Capture values from GitHub Actions secrets and convert them into environment variables
+      - name: Run script
+        env: # Captures the values from GitHub Actions secrets and converts them into environment variable values.
           SATELLITE_API_KEY: ${{ secrets.SATELLITE_API_KEY }}
           SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
           SMTP_PORT: ${{ secrets.SMTP_PORT }}
@@ -55,24 +50,18 @@ jobs:
           ALTITUDE: ${{ secrets.ALTITUDE }}
           SATELLITE_ID: ${{ secrets.SATELLITE_ID }}
           LOG_DIRECTORY: ${{ secrets.LOG_DIRECTORY }}
-          LOG_FILE: ${{ secrets.LOG_FILE }}
+          LOG_FILE: ${{ secrets.LOG_FILE }}  
         run: python main.py
         # This step runs the Python script with the environment variables needed for the satellite notification process.
 
-      - name: Get current timestamp # Capture the current timestamp
+      - name: Get current timestamp
         id: get_timestamp
         run: echo "timestamp_now=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV # Create 'timestamp_now' variable and store the current date and time in GITHUB_ENV
 
-      - name: Pull latest changes before pushing # Ensure local branch is up to date before pushing
-        run: |
-          git config --global user.name My GitHub Actions Bot pull data
-          git config --global user.email "${{ secrets.EMAIL_USER }}"
-          git pull origin ${{ github.ref_name }} # Pull latest changes from the current branch
-
-      - name: Auto commit and push changes # Commit and push any changes made by the script
+      - name: Auto commit and push changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: Automated Change - Branch ${{ github.ref_name }} - ${{ env.timestamp_now }} # Commit message with the current timestamp
+          commit_message: Automated Change - ${{ env.timestamp_now }} # Commit message that includes the current timestamp from the variable 'timestamp_now'
           commit_user_name: My GitHub Actions Bot
           commit_user_email: ${{ secrets.EMAIL_USER }}
           commit_author: 'Jorge Cardona <${{ secrets.EMAIL_USER }}>'
