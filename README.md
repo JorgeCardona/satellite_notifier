@@ -281,7 +281,7 @@ on:
     # This cron is adjusted to run in UTC-5
     # UTC-5 means adding 5 hours to UTC time
     # To run between 19:00 and 07:00 UTC-5, we adjust the range in UTC
-    - cron: '0 0-12 * * 6,0'  # Runs the workflow between 19:00 and 07:00 in UTC-5 on Saturday (6) and Sunday (0)
+    - cron: '0 0-12/3 * * 6,0'  # Runs the workflow between 19:00 and 07:00 in UTC-5 every 3 hours (19:00, 22:00, 01:00, 04:00, 07:00) on Saturday (6) and Sunday (0)
   workflow_dispatch:  # Allows manual triggering if needed
 
 jobs:
