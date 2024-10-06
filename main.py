@@ -159,27 +159,37 @@ def check_satellite(url_satellite):
 
 def save_message_to_file(body_message, log_directory, log_file):
     """
-    Saves the body_message to file with timestamp and message in the 'satellite_log' folder.
+    Saves the body_message to a file with a timestamp in the specified directory.
+    
+    Args:
+    - body_message (str): The message to save.
+    - log_directory (str): The directory where the log file will be saved.
+    - log_file (str): The name of the log file.
     """
     # Get the current timestamp
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     
     # Create the directory if it doesn't exist
-    if not os.path.exists(log_directory):
-        os.makedirs(log_directory)
+    try:
+        if not os.path.exists(log_directory):
+            os.makedirs(log_directory)
+    except Exception as e:
+        print(f'Error creating directory: {e}')
+        return  # Exit the function if we can't create the directory
     
     # Full path to the file
     file_path = os.path.join(log_directory, log_file)
-    
-    # Open the CSV file in append mode
-    with open(csv_file_path, mode='a', newline='', encoding='utf-8') as file:
-        writer = csv.writer(file)
+
+    try:
+        # Open the file in append mode
+        with open(file_path, mode='a', encoding='utf-8') as file:
+            # Write the timestamp and body_message to the file
+            file.write(f"{timestamp} - {body_message}\n")
         
-        # Write a row with the timestamp and the body_message
-        writer.writerow([timestamp, body_message])
+        print(f'Message saved to {file_path}')
     
-    print(f'Message saved to {file_path}')
-    
+    except Exception as e:
+        print(f'Error saving message to file: {e}')
     
 # validate the satellite list url URL and run the check
 def check_multiple_satellites():
