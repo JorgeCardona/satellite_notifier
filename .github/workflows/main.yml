@@ -55,10 +55,14 @@ jobs:
         run: python main.py
         # This step runs the Python script with the environment variables needed for the satellite notification process.
 
+      - name: Get current timestamp
+        id: get_timestamp
+        run: echo "timestamp=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
+
       - name: Auto commit and push changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: Automated Change - ${{ github.event.schedule.start | format('yyyy-MM-dd HH:mm:ss') }}
+          commit_message: Automated Change - ${{ env.timestamp }}
           commit_user_name: My GitHub Actions Bot
           commit_user_email: ${{ secrets.EMAIL_USER }}
           commit_author: 'Jorge Cardona <${{ secrets.EMAIL_USER }}>'
