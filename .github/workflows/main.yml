@@ -19,7 +19,7 @@ jobs:
 
     strategy:
       matrix:
-        python-version: [3.11.7, 3.12.3, 3.13.2] # Define a matrix to test on multiple Python versions
+        python-version: [3.10.13, 3.11.7, 3.12.3] # Define a matrix to test on multiple Python versions
 
     permissions:
       # Give the default GITHUB_TOKEN write permission to commit and push the
