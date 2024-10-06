@@ -65,7 +65,7 @@ jobs:
 
       - name: Pull latest changes before pushing # Ensure local branch is up to date before pushing
         run: |
-          git config --global user.name "My GitHub Actions Bot"
+          git config --global user.name My GitHub Actions Bot pull data
           git config --global user.email "${{ secrets.EMAIL_USER }}"
           git pull origin ${{ github.ref_name }} # Pull latest changes from the current branch
 
