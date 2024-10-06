@@ -27,6 +27,9 @@ EMAIL_USER = os.getenv('EMAIL_USER')
 # https://myaccount.google.com/apppasswords
 EMAIL_PASSWORD = os.getenv('EMAIL_PASSWORD')
 RECIPIENT_EMAIL = os.getenv('RECIPIENT_EMAIL')
+# Directory and file for store records
+LOG_DIRECTORY = os.getenv('LOG_DIRECTORY')
+LOG_FILE = os.getenv('LOG_FILE')
 
 def send_email(message):
     """
@@ -154,6 +157,30 @@ def check_satellite(url_satellite):
 
             return None
 
+def save_message_to_file(body_message, log_directory, log_file):
+    """
+    Saves the body_message to file with timestamp and message in the 'satellite_log' folder.
+    """
+    # Get the current timestamp
+    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    
+    # Create the directory if it doesn't exist
+    if not os.path.exists(log_directory):
+        os.makedirs(log_directory)
+    
+    # Full path to the file
+    file_path = os.path.join(log_directory, log_file)
+    
+    # Open the CSV file in append mode
+    with open(csv_file_path, mode='a', newline='', encoding='utf-8') as file:
+        writer = csv.writer(file)
+        
+        # Write a row with the timestamp and the body_message
+        writer.writerow([timestamp, body_message])
+    
+    print(f'Message saved to {file_path}')
+    
+    
 # validate the satellite list url URL and run the check
 def check_multiple_satellites():
     """
@@ -181,6 +208,7 @@ def check_multiple_satellites():
         body_message = '\n'.join(visible_satellites)
         send_email(body_message)
         print('Email sent successfully.')
+        save_message_to_file(body_message, log_directory=LOG_DIRECTORY, log_file=LOG_FILE)
 
 # Call the new function to process the list of satellite IDs
 check_multiple_satellites()
