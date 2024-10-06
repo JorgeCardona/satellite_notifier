@@ -23,13 +23,13 @@ jobs:
       contents: write
       
     steps:
-      - name: Checkout repository 
-        uses: actions/checkout@v4 # download code from repository
+      - name: Checkout repository # download code from repository 
+        uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11.7'
+          python-version: '3.11.7' # Sets up Python 3.11.7
 
       - name: Install dependencies
         run: |
@@ -53,6 +53,7 @@ jobs:
           LOG_DIRECTORY: ${{ secrets.LOG_DIRECTORY }}
           LOG_FILE: ${{ secrets.LOG_FILE }}  
         run: python main.py
+        # This step runs the Python script with the environment variables needed for the satellite notification process.
 
       - name: Auto commit and push changes
         uses: stefanzweifel/git-auto-commit-action@v5
