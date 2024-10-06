@@ -40,6 +40,9 @@ EMAIL_USER = os.getenv('EMAIL_USER')
 # https://myaccount.google.com/apppasswords
 EMAIL_PASSWORD = os.getenv('EMAIL_PASSWORD')
 RECIPIENT_EMAIL = os.getenv('RECIPIENT_EMAIL')
+# Directory and file for store records
+LOG_DIRECTORY = os.getenv('LOG_DIRECTORY')
+LOG_FILE = os.getenv('LOG_FILE')
 
 def send_email(message):
     """
@@ -167,6 +170,40 @@ def check_satellite(url_satellite):
 
             return None
 
+def save_message_to_file(body_message, log_directory, log_file):
+    """
+    Saves the body_message to a file with a timestamp in the specified directory.
+    
+    Args:
+    - body_message (str): The message to save.
+    - log_directory (str): The directory where the log file will be saved.
+    - log_file (str): The name of the log file.
+    """
+    # Get the current timestamp
+    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    
+    # Create the directory if it doesn't exist
+    try:
+        if not os.path.exists(log_directory):
+            os.makedirs(log_directory)
+    except Exception as e:
+        print(f'Error creating directory: {e}')
+        return  # Exit the function if we can't create the directory
+    
+    # Full path to the file
+    file_path = os.path.join(log_directory, log_file)
+
+    try:
+        # Open the file in append mode
+        with open(file_path, mode='a', encoding='utf-8') as file:
+            # Write the timestamp and body_message to the file
+            file.write(f"{timestamp} - {body_message}\n")
+        
+        print(f'Message saved to {file_path}')
+    
+    except Exception as e:
+        print(f'Error saving message to file: {e}')
+    
 # validate the satellite list url URL and run the check
 def check_multiple_satellites():
     """
@@ -194,6 +231,7 @@ def check_multiple_satellites():
         body_message = '\n'.join(visible_satellites)
         send_email(body_message)
         print('Email sent successfully.')
+        save_message_to_file(body_message, log_directory=LOG_DIRECTORY, log_file=LOG_FILE)
 
 # Call the new function to process the list of satellite IDs
 check_multiple_satellites()
@@ -218,6 +256,8 @@ SMTP_PORT: The SMTP server port (e.g., 587 for Gmail).
 EMAIL_USER: Your email address used to send the notification.
 EMAIL_PASSWORD: Your email password or app-specific password.
 RECIPIENT_EMAIL: The email address where you want to receive the notifications.
+LOG_DIRECTORY: The directory path where log files will be stored, e.g., 'satellite_history/'.
+LOG_FILE: The name of the log file to save satellite notification messages, e.g., 'satellite_log.txt'.
 ```
 
 ![Repo Secrets](images/repo_secrets.png)
@@ -229,6 +269,9 @@ The GitHub Actions workflow file (.github/workflows/main.yml) is already configu
 Here is the workflow configuration:
 
 ```yaml
+# https://github.com/actions
+# https://github.com/marketplace?type=actions
+
 name: Satellite Notifier
 
 on:
@@ -244,12 +287,18 @@ on:
 jobs:
   run:
     runs-on: ubuntu-latest
+
+    permissions:
+      # Give the default GITHUB_TOKEN write permission to commit and push the
+      # added or changed files to the repository.
+      contents: write
+      
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+      - name: Checkout repository # download code from repository 
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11.7' # Sets up Python 3.11.7
 
@@ -261,7 +310,7 @@ jobs:
           pip install pandas
 
       - name: Run script
-        env:
+        env: # Captures the values from GitHub Actions secrets and converts them into environment variable values.
           SATELLITE_API_KEY: ${{ secrets.SATELLITE_API_KEY }}
           SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
           SMTP_PORT: ${{ secrets.SMTP_PORT }}
@@ -272,8 +321,22 @@ jobs:
           LONGITUDE: ${{ secrets.LONGITUDE }}
           ALTITUDE: ${{ secrets.ALTITUDE }}
           SATELLITE_ID: ${{ secrets.SATELLITE_ID }}
+          LOG_DIRECTORY: ${{ secrets.LOG_DIRECTORY }}
+          LOG_FILE: ${{ secrets.LOG_FILE }}  
         run: python main.py
         # This step runs the Python script with the environment variables needed for the satellite notification process.
+
+      - name: Get current timestamp
+        id: get_timestamp
+        run: echo "timestamp_now=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV # Create 'timestamp_now' variable and store the current date and time in GITHUB_ENV
+
+      - name: Auto commit and push changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: Automated Change - ${{ env.timestamp_now }} # Commit message that includes the current timestamp from the variable 'timestamp_now'
+          commit_user_name: My GitHub Actions Bot
+          commit_user_email: ${{ secrets.EMAIL_USER }}
+          commit_author: 'Jorge Cardona <${{ secrets.EMAIL_USER }}>'
 ```
 
 4. Run the Workflow Manually (Optional)
