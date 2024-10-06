@@ -57,12 +57,12 @@ jobs:
 
       - name: Get current timestamp
         id: get_timestamp
-        run: echo "timestamp=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
+        run: echo "timestamp_now=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV # Create 'timestamp_now' variable and store the current date and time in GITHUB_ENV
 
       - name: Auto commit and push changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: Automated Change - ${{ env.timestamp }}
+          commit_message: Automated Change - ${{ env.timestamp_now }} # Commit message that includes the current timestamp from the variable 'timestamp_now'
           commit_user_name: My GitHub Actions Bot
           commit_user_email: ${{ secrets.EMAIL_USER }}
           commit_author: 'Jorge Cardona <${{ secrets.EMAIL_USER }}>'
