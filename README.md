@@ -1,3 +1,5 @@
+[![Satellite Notifier](https://github.com/JorgeCardona/satellite_notifier/actions/workflows/main.yml/badge.svg)](https://github.com/JorgeCardona/satellite_notifier/actions/workflows/main.yml)
+
 # Satellite Notifier
 
 Description
