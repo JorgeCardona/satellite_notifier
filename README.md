@@ -294,7 +294,7 @@ jobs:
       # Give the default GITHUB_TOKEN write permission to commit and push the
       # added or changed files to the repository.
       contents: write
-      
+
     steps:
       - name: Checkout repository # download code from repository 
         uses: actions/checkout@v4
@@ -310,7 +310,6 @@ jobs:
           pip install requests
           pip install pytz
           pip install pandas
-
       - name: Run script
         env: # Captures the values from GitHub Actions secrets and converts them into environment variable values.
           SATELLITE_API_KEY: ${{ secrets.SATELLITE_API_KEY }}
