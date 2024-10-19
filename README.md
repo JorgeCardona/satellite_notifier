@@ -262,6 +262,13 @@ LOG_DIRECTORY: The directory path where log files will be stored, e.g., 'satelli
 LOG_FILE: The name of the log file to save satellite notification messages, e.g., 'satellite_log.txt'.
 ```
 
+# Repository secrets to enable detailed debugging
+| Secret                | Name                 | Value |
+|-----------------------|----------------------|-------|
+| Runner Debug Logging   | ACTIONS_RUNNER_DEBUG | true  |
+| Steps Debug Logging    | ACTIONS_STEP_DEBUG   | true  |
+
+
 ![Repo Secrets](images/repo_secrets.png)
 
 
